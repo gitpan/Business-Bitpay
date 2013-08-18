@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use 5.008_001;
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 eval $VERSION;
 
 use HTTP::Request;
@@ -32,18 +32,21 @@ sub prepare_request {
     $uri->path($uri->path . $api);
 
     my $method = 'GET';
+    my @fields;
     if ($data) {
         $method = 'POST';
         $data   = encode_json $data;
+        push @fields, 'Content-Type' => 'application/json';
     }
 
     my $request = HTTP::Request->new(
         $method => $uri, [
-            'Content-Type' => 'application/json',
-            'User-Agent'   => 'bitpay api'
+            'User-Agent'   => 'bitpay api',
+            @fields,
         ],
         $data
     );
+    $request;
 }
 
 sub request {
@@ -137,7 +140,7 @@ Sergey Zasenko, C<undef@cpan.org>.
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2011, Sergey Zasenko.
+Copyright (C) 2013, Sergey Zasenko.
 
 This program is free software, you can redistribute it and/or modify it under
 the same terms as Perl 5.10.
